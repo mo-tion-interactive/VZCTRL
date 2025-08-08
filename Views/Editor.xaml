@@ -30,12 +30,17 @@
             <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="TriggerTemplate">
+            <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="150" ToolTip="Format: [Element-Name]; Mehrere mit ';' trennen"/>
+        </DataTemplate>
+
         <local:ControlTypeTemplateSelector
             x:Key="ControlTypeTemplateSelector"
             ButtonTemplate="{StaticResource ButtonTemplate}"
             SliderTemplate="{StaticResource SliderTemplate}"
             SwitchTemplate="{StaticResource SwitchTemplate}"
-            LabelTemplate="{StaticResource LabelTemplate}" />
+            LabelTemplate="{StaticResource LabelTemplate}"
+            TriggerTemplate="{StaticResource TriggerTemplate}" />
     </Window.Resources>
 
     <Grid Margin="10">

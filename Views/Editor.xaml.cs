@@ -151,22 +151,14 @@ namespace Ventuz.Views
             {
                 try
                 {
-                    string valueToSend = element.Value;
-
-                    switch (element.Type.ToLower())
+                    if (element.Type.ToLower() == "trigger")
                     {
-                        case "button":
-                            await _cluster.DataItem(_sceneIID, element.Command, 0, null, null);
-                            break;
-                        case "switch":
-                            await _cluster.DataItem(_sceneIID, element.Command, valueToSend == "1", null, null);
-                            break;
-                        default:
-                            await _cluster.DataItem(_sceneIID, element.Command, valueToSend, null, null);
-                            break;
+                        await ExecuteTrigger(element);
                     }
-
-                    AppendDebug($"Senden erfolgreich: {element.Command} {element.Value}");
+                    else
+                    {
+                        await ExecuteSingleControl(element);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -174,6 +166,79 @@ namespace Ventuz.Views
                     ShowMessage($"Fehler beim Senden: {ex.Message}", isError: true);
                 }
             }
+        }
+
+        private async Task ExecuteTrigger(ControlElement triggerElement)
+        {
+            if (string.IsNullOrWhiteSpace(triggerElement.Value))
+            {
+                AppendDebug("Trigger hat keinen Wert");
+                return;
+            }
+
+            var controlNames = triggerElement.Value.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                                  .Select(name => name.Trim())
+                                                  .Where(name => !string.IsNullOrEmpty(name));
+
+            var executedControls = new List<string>();
+            var failedControls = new List<string>();
+
+            foreach (var controlName in controlNames)
+            {
+                var targetControl = _viewModel.Controls.FirstOrDefault(c => 
+                    string.Equals(c.Name, controlName, StringComparison.OrdinalIgnoreCase));
+
+                if (targetControl != null)
+                {
+                    try
+                    {
+                        await ExecuteSingleControl(targetControl);
+                        executedControls.Add(controlName);
+                        AppendDebug($"Trigger ausgeführt: {controlName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        failedControls.Add($"{controlName} ({ex.Message})");
+                        AppendDebug($"Trigger fehlgeschlagen für {controlName}: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    failedControls.Add($"{controlName} (nicht gefunden)");
+                    AppendDebug($"Control nicht gefunden: {controlName}");
+                }
+            }
+
+            if (executedControls.Any())
+            {
+                AppendDebug($"Trigger '{triggerElement.Name}' erfolgreich: {string.Join(", ", executedControls)}");
+            }
+            if (failedControls.Any())
+            {
+                AppendDebug($"Trigger '{triggerElement.Name}' teilweise fehlgeschlagen: {string.Join(", ", failedControls)}");
+            }
+        }
+
+        private async Task ExecuteSingleControl(ControlElement element)
+        {
+            string valueToSend = element.Value;
+
+            switch (element.Type.ToLower())
+            {
+                case "button":
+                    await _cluster!.DataItem(_sceneIID, element.Command, 0, null, null);
+                    break;
+                case "switch":
+                    await _cluster!.DataItem(_sceneIID, element.Command, valueToSend == "1", null, null);
+                    break;
+                case "trigger":
+                    throw new InvalidOperationException("Trigger kann nicht direkt gesendet werden");
+                default:
+                    await _cluster!.DataItem(_sceneIID, element.Command, valueToSend, null, null);
+                    break;
+            }
+
+            AppendDebug($"Senden erfolgreich: {element.Command} {element.Value}");
         }
 
         private void AppendDebug(string message)

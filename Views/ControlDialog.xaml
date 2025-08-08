@@ -25,6 +25,7 @@
             <ComboBoxItem Content="Slider"/>
             <ComboBoxItem Content="Switch"/>
             <ComboBoxItem Content="Label"/>
+            <ComboBoxItem Content="Trigger"/>
         </ComboBox>
 
         <TextBlock Text="Command:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="0,0,5,5"/>

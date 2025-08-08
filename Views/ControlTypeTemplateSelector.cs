@@ -10,6 +10,7 @@ namespace Ventuz.Views
         public DataTemplate? SliderTemplate { get; set; }
         public DataTemplate? SwitchTemplate { get; set; }
         public DataTemplate? LabelTemplate { get; set; }
+        public DataTemplate? TriggerTemplate { get; set; }
 
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
@@ -22,6 +23,7 @@ namespace Ventuz.Views
                 "slider" => SliderTemplate,
                 "switch" => SwitchTemplate,
                 "label" => LabelTemplate,
+                "trigger" => TriggerTemplate,
                 _ => base.SelectTemplate(item, container)
             };
         }
