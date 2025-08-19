@@ -92,7 +92,6 @@ dotnet run
 ### 📖 Weiterführende Dokumentation
 - [Benutzerhandbuch](https://vzctrl.mo-tion.at/documentation) 
 - [Getting Started](https://vzctrl.mo-tion.at/documentation#getting-started)
-- [API-Referenz](https://vzctrl.mo-tion.at/documentation#api-reference)
 - [Download](https://vzctrl.mo-tion.at/documentation#download)
 - [Support](https://vzctrl.mo-tion.at/documentation#support)
 
